@@ -18,7 +18,7 @@
         <?php
         session_start();
         $userId = $_SESSION['user_id'];
-        $conn = new mysqli('localhost', 'root', '', 'restaurant_app');
+        $conn = new mysqli('localhost', 'root', '', 'restaurant_app',port:3308);
         $query = "SELECT * FROM orders WHERE user_id = $userId ORDER BY created_at DESC";
         $result = $conn->query($query);
 

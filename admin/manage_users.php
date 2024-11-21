@@ -27,7 +27,7 @@
             </thead>
             <tbody>
                 <?php
-                $conn = new mysqli('localhost', 'root', '', 'restaurant_app');
+                $conn = new mysqli('localhost', 'root', '', 'restaurant_app',port:3308);
                 $query = "SELECT * FROM users";
                 $result = $conn->query($query);
 

@@ -27,7 +27,7 @@
             </thead>
             <tbody>
                 <?php
-                $conn = new mysqli('localhost', 'root', '', 'restaurant_app');
+                $conn = new mysqli('localhost', 'root', '', 'restaurant_app',port:3308);
                 $query = "SELECT o.id, u.name, o.total_price, o.status FROM orders o 
                           JOIN users u ON o.user_id = u.id ORDER BY o.created_at DESC";
                 $result = $conn->query($query);
@@ -36,7 +36,7 @@
                     echo "<tr>
                             <td>{$order['id']}</td>
                             <td>{$order['name']}</td>
-                            <td>Détails ici</td>
+                             <td><a href='order_details.php?id={$order['id']}'>Détails ici</a></td>
                             <td>{$order['total_price']} DH</td>
                             <td>{$order['status']}</td>
                             <td>

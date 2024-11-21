@@ -1,3 +1,70 @@
+<?php
+session_start();
+
+// Redirect to login page if user is not logged in
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
+
+// Connect to the database
+$port = 3308; // Adjust the port as per your MySQL configuration
+$conn = new mysqli('localhost', 'root', '', 'restaurant_app', $port);
+
+// Handle errors with the connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Fetch the user's cart items
+$userId = $_SESSION['user_id'];
+$query = "SELECT cart.*, menu_items.name, menu_items.price 
+          FROM cart 
+          JOIN menu_items ON cart.item_id = menu_items.id 
+          WHERE cart.user_id = $userId";
+$result = $conn->query($query);
+
+// Handle finishing the order
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['finish_order'])) {
+    // Calculate the total price
+    $query = "SELECT SUM(menu_items.price * cart.quantity) AS total 
+              FROM cart 
+              JOIN menu_items ON cart.item_id = menu_items.id 
+              WHERE cart.user_id = $userId";
+    $resultTotal = $conn->query($query);
+    $rowTotal = $resultTotal->fetch_assoc();
+    $totalPrice = $rowTotal['total'];
+
+    // Insert into the orders table
+    $query = "INSERT INTO orders (user_id, total_price, status) VALUES ($userId, $totalPrice, 'pending')";
+    if ($conn->query($query)) {
+        // Get the last inserted order ID
+        $orderId = $conn->insert_id;
+
+        // Insert the cart items into the order_items table
+        $query = "SELECT * FROM cart WHERE user_id = $userId";
+        $cartItems = $conn->query($query);
+        while ($cartItem = $cartItems->fetch_assoc()) {
+            $itemId = $cartItem['item_id'];
+            $quantity = $cartItem['quantity'];
+            $query = "INSERT INTO order_items (order_id, menu_item_id, quantity) 
+                      VALUES ($orderId, $itemId, $quantity)";
+            $conn->query($query);
+        }
+
+        // Clear the user's cart
+        $query = "DELETE FROM cart WHERE user_id = $userId";
+        $conn->query($query);
+
+        // Redirect to an order confirmation page
+        header("Location: order_confirmation.php?order_id=$orderId");
+        exit;
+    } else {
+        echo "Failed to place the order: " . $conn->error;
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,6 +72,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panier</title>
     <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+ 
+.cart{
+  
+    min-height: 80vh;
+}
+    </style>
 </head>
 <body>
     <header>
@@ -15,50 +89,47 @@
         </nav>
     </header>
     <section class="cart">
-        <?php
-        session_start();
-        if (isset($_SESSION['cart']) && count($_SESSION['cart']) > 0) {
-            echo "<table>
-                    <thead>
+        <?php if ($result && $result->num_rows > 0): ?>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Article</th>
+                        <th>Prix</th>
+                        <th>Quantité</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    $total = 0;
+                    while ($row = $result->fetch_assoc()):
+                        $itemTotal = $row['price'] * $row['quantity'];
+                        $total += $itemTotal;
+                    ?>
                         <tr>
-                            <th>Article</th>
-                            <th>Quantité</th>
-                            <th>Prix</th>
-                            <th>Total</th>
-                            <th>Action</th>
+                            <td><?php echo htmlspecialchars($row['name']); ?></td>
+                            <td><?php echo number_format($row['price'], 2); ?> DH</td>
+                            <td><?php echo $row['quantity']; ?></td>
+                            <td><?php echo number_format($itemTotal, 2); ?> DH</td>
                         </tr>
-                    </thead>
-                    <tbody>";
-            $total = 0;
-            foreach ($_SESSION['cart'] as $item) {
-                $itemTotal = $item['quantity'] * $item['price'];
-                $total += $itemTotal;
-                echo "<tr>
-                        <td>{$item['name']}</td>
-                        <td>{$item['quantity']}</td>
-                        <td>{$item['price']} DH</td>
-                        <td>{$itemTotal} DH</td>
-                        <td><a href='remove_from_cart.php?id={$item['id']}'>Supprimer</a></td>
-                      </tr>";
-            }
-            echo "</tbody>
-                  </table>
-                  <div class='cart-total'>
-                      <p>Total : <strong>{$total} DH</strong></p>
-                      <button onclick='checkout()'>Passer la commande</button>
-                  </div>";
-        } else {
-            echo "<p>Votre panier est vide.</p>";
-        }
-        ?>
+                    <?php endwhile; ?>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3">Total</td>
+                        <td><?php echo number_format($total, 2); ?> DH</td>
+                    </tr>
+                </tfoot>
+            </table>
+            <form method="POST" action="cart.php">
+                <button type="submit" name="finish_order" class="btn-finish">Finir la commande</button>
+            </form>
+        <?php else: ?>
+            <p>Votre panier est vide.</p>
+        <?php endif; ?>
     </section>
     <footer>
         <p>&copy; 2024 Restaurant App. Tous droits réservés.</p>
     </footer>
-    <script>
-        function checkout() {
-            window.location.href = "order_status.php";
-        }
-    </script>
 </body>
 </html>

@@ -45,7 +45,7 @@
             </thead>
             <tbody>
                 <?php
-                $conn = new mysqli('localhost', 'root', '', 'restaurant_app');
+                $conn = new mysqli('localhost', 'root', '', 'restaurant_app',port:3308);
                 $query = "SELECT * FROM menu_items";
                 $result = $conn->query($query);
 
@@ -56,7 +56,7 @@
                             <td>{$item['description']}</td>
                             <td>{$item['price']} DH</td>
                             <td>{$item['category']}</td>
-                            <td><img src='../uploads/{$item['image_url']}' alt='{$item['name']}' width='50'></td>
+                            <td><img src='../{$item['image_url']}' alt='{$item['name']}' width='50'></td>
                             <td>
                                 <a href='edit_menu_item.php?id={$item['id']}'>Modifier</a> | 
                                 <a href='delete_menu_item.php?id={$item['id']}'>Supprimer</a>

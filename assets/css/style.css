@@ -23,6 +23,7 @@ header nav a {
     padding: 50px;
     background: linear-gradient(45deg, #e74c3c, #ff6f61);
     color: white;
+    height: 500vh;
 }
 
 .hero button {
@@ -35,6 +36,8 @@ header nav a {
 }
 
 footer {
+    position: absolute;
+    bottom: 0;
     text-align: center;
     padding: 10px;
     background-color: #343a40;
@@ -134,4 +137,87 @@ footer {
     border-radius: 5px;
     max-width: 400px;
     background-color: #fff;
+}
+
+.form-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh - 150px); /* Ajuste la hauteur en fonction du header et footer */
+    background-color: #ffffff;
+}
+
+.form {
+    width: 100%;
+    max-width: 400px;
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #343a40;
+}
+
+.form input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.form input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.form button {
+    width: 100%;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.form button:hover {
+    background-color: #218838;
+}
+
+/* Styles pour les écrans plus petits */
+@media (max-width: 600px) {
+    header {
+        font-size: 16px;
+    }
+
+    .form {
+        padding: 15px;
+    }
+
+    .form input, .form button {
+        font-size: 14px;
+    }
+}
+
+.btn-finish {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.btn-finish:hover {
+    background-color: #0056b3;
 }
