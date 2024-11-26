@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - Gestion des Commandes</title>
     <link rel="stylesheet" href="../assets/css/admin.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
     <header>
@@ -13,7 +14,7 @@
             <a href="dashboard.php">Tableau de Bord</a>
         </nav>
     </header>
-    <section>
+    <section style="min-height:70vh">
         <table>
             <thead>
                 <tr>

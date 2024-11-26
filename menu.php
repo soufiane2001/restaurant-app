@@ -48,6 +48,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['item_id'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Menu</title>
     <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+      
+        footer{
+            position: relative;
+        }
+        .menu-item{
+            align-self:flex-start ;
+        }
+    </style>
 </head>
 <body>
     <header>

@@ -40,6 +40,7 @@ $totalRevenueFormatted = number_format($totalRevenue, 2, ',', ' ') . " DH";
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - Tableau de Bord</title>
     <link rel="stylesheet" href="../assets/css/admin.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
     <header>
@@ -49,7 +50,7 @@ $totalRevenueFormatted = number_format($totalRevenue, 2, ',', ' ') . " DH";
             <a href="manage_menu.php">Menu</a>
             <a href="manage_users.php">Utilisateurs</a>
             <a href="stats.php">Statistiques</a>
-            <a href="../index.php">Déconnexion</a>
+            <a href="./logout.php">Déconnexion</a>
         </nav>
     </header>
     <section class="dashboard">

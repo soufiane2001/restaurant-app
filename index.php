@@ -5,21 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Accueil - Restaurant</title>
     <link rel="stylesheet" href="assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
     <style>
-        footer {
-            position: absolute;
-    bottom: 0;
-    text-align: center;
-    padding: 10px;
-    background-color: #343a40;
-    color: white;
-    width: 98.35%;
-}
+   
 .hero{
     background-image: url('./assets/images/background.png');
     background-repeat: no-repeat;
     background-size: cover;
-    height: 50vh;
+    height: 80vh;
 }
     </style>
 </head>

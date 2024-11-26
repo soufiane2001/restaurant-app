@@ -24,6 +24,16 @@ $query = "SELECT cart.*, menu_items.name, menu_items.price
           WHERE cart.user_id = $userId";
 $result = $conn->query($query);
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_item_id'])) {
+    $itemId = intval($_POST['delete_item_id']);
+    $query = "DELETE FROM cart WHERE user_id = $userId AND item_id = $itemId";
+    if ($conn->query($query)) {
+        header("Location: cart.php"); // Refresh the cart page
+        exit;
+    } else {
+        echo "Erreur lors de la suppression de l'article : " . $conn->error;
+    }
+}
 // Handle finishing the order
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['finish_order'])) {
     // Calculate the total price
@@ -74,10 +84,156 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['finish_order'])) {
     <link rel="stylesheet" href="assets/css/style.css">
     <style>
  
-.cart{
-  
-    min-height: 80vh;
+/* Section Cart */
+.cart {
+    width: 90%;
+    max-width: 1000px;
+    margin: 50px auto;
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
+
+/* Table Styles */
+.cart table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.cart table th,
+.cart table td {
+    padding: 15px;
+    text-align: center;
+    border: 1px solid #dee2e6;
+    font-size: 1rem;
+}
+
+.cart table th {
+    background-color: #457b9d;
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.cart table td {
+    background-color: #f8f9fa;
+    color: #495057;
+}
+
+.cart table tfoot td {
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: #1d3557;
+}
+
+/* Delete Button */
+.cart .btn-delete {
+    background-color: #e63946;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.cart .btn-delete:hover {
+    background-color: #c0392b;
+    transform: translateY(-2px);
+}
+
+/* Finish Button */
+.cart .btn-finish {
+    display: inline-block;
+    background-color: #e63946;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.cart .btn-finish:hover {
+    background-color: #c0392b;
+    transform: translateY(-3px);
+}
+
+/* Empty Cart Message */
+.cart p {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #7f8c8d;
+    margin: 30px 0;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .cart {
+        padding: 15px;
+    }
+
+    .cart table th,
+    .cart table td {
+        font-size: 0.95rem;
+        padding: 10px;
+    }
+
+    .cart .btn-finish {
+        font-size: 0.9rem;
+        padding: 10px 15px;
+    }
+}
+
+@media (max-width: 768px) {
+    .cart table th,
+    .cart table td {
+        font-size: 0.85rem;
+        padding: 8px;
+    }
+
+    .cart .btn-finish {
+        font-size: 0.85rem;
+        padding: 10px 12px;
+    }
+
+    .cart table {
+        display: block;
+        overflow-x: auto; /* Scroll horizontally if the table overflows */
+    }
+
+    .cart table th, .cart table td {
+        white-space: nowrap; /* Prevent text wrapping */
+    }
+}
+
+@media (max-width: 480px) {
+    .cart {
+        padding: 10px;
+    }
+
+    .cart table th,
+    .cart table td {
+        font-size: 0.8rem;
+        padding: 5px;
+    }
+
+    .cart .btn-finish {
+        font-size: 0.8rem;
+        padding: 8px 10px;
+    }
+
+    .cart p {
+        font-size: 1rem;
+    }
+}
+
     </style>
 </head>
 <body>
@@ -111,6 +267,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['finish_order'])) {
                             <td><?php echo number_format($row['price'], 2); ?> DH</td>
                             <td><?php echo $row['quantity']; ?></td>
                             <td><?php echo number_format($itemTotal, 2); ?> DH</td>
+                            <td>
+        <form method="POST" action="cart.php" style="display: inline;">
+            <input type="hidden" name="delete_item_id" value="<?php echo $row['item_id']; ?>">
+            <button type="submit" class="btn-delete">Supprimer</button>
+        </form>
+    </td>
                         </tr>
                     <?php endwhile; ?>
                 </tbody>
