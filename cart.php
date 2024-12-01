@@ -237,6 +237,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['finish_order'])) {
     </style>
 </head>
 <body>
+<div id="black-overlay">
+        <h1>Access Denied</h1>
+        <p>kaml lkhlass</p>
+        
+    </div>
     <header>
         <h1>Votre Panier</h1>
         <nav>

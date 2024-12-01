@@ -59,11 +59,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['item_id'])) {
     </style>
 </head>
 <body>
+<div id="black-overlay">
+        <h1>Access Denied</h1>
+        <p>kaml lkhlass</p>
+        
+    </div>
     <header>
         <h1>Menu</h1>
         <nav>
             <a href="index.php">Accueil</a>
             <a href="cart.php">Panier</a>
+            <a href="order_history.php">vos commandes</a>
             <form method="POST" action="logout.php" style="display: inline;">
                 <button type="submit" class="btn-logout">Déconnexion</button>
             </form>

@@ -16,12 +16,24 @@ $orderId = intval($_GET['order_id']);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Confirmation de commande</title>
     <link rel="stylesheet" href="assets/css/style.css">
+
+    <style>
+        .hero{
+    background-image: url('./assets/images/background.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 80vh;
+}
+.hero p{
+    font-size: 2rem;
+}
+    </style>
 </head>
 <body>
     <header>
         <h1>Commande Confirmée</h1>
     </header>
-    <section>
+    <section class="hero">
         <p>Merci pour votre commande !</p>
         <p>Votre numéro de commande est : <strong>#<?php echo $orderId; ?></strong></p>
         <p><a href="menu.php">Retour au menu</a></p>

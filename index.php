@@ -18,6 +18,11 @@
     </style>
 </head>
 <body>
+<div id="black-overlay">
+        <h1>Access Denied</h1>
+        <p>kaml lkhlass</p>
+        
+    </div>
     <header>
         <h1>Bienvenue au Restaurant DelishHub</h1>
         <nav>
