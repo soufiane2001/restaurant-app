@@ -292,3 +292,166 @@ footer {
         font-size: 0.9rem;
     }
 }
+
+
+/* Testimonials Section */
+.testimonials {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.testimonials h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1d3557;
+    margin-bottom: 20px;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.testimonial {
+    padding: 20px;
+    margin: 20px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background: #f9f9f9;
+}
+
+.testimonial h3 {
+    color: #e63946;
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.testimonial p {
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.testimonial p:last-child {
+    font-style: italic;
+    color: #888;
+}
+
+.testimonial p.stars {
+    color: #f4b400; /* Gold for stars */
+    font-size: 1.2rem;
+}
+
+/* Add Testimonial Section */
+.add-testimonial {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.add-testimonial h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1d3557;
+    margin-bottom: 20px;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.add-testimonial form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.add-testimonial textarea {
+    width: 100%;
+    height: 100px;
+    padding: 12px;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    resize: none;
+    background: #f8f9fa;
+}
+
+.add-testimonial textarea:focus {
+    outline: none;
+    border-color: #1d3557;
+    box-shadow: 0 4px 8px rgba(29, 53, 87, 0.2);
+}
+
+.add-testimonial select {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #f8f9fa;
+}
+
+.add-testimonial select:focus {
+    outline: none;
+    border-color: #1d3557;
+    box-shadow: 0 4px 8px rgba(29, 53, 87, 0.2);
+}
+
+.add-testimonial button {
+    background: #1d3557;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    align-self: center;
+    width: 50%;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.add-testimonial button:hover {
+    background: #457b9d;
+    transform: scale(1.05);
+}
+
+/* Footer */
+footer {
+    background: #1d3557;
+    color: white;
+    text-align: center;
+    padding: 15px;
+    font-size: 0.9rem;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 2rem;
+    }
+
+    .testimonials h2, .add-testimonial h2 {
+        font-size: 1.5rem;
+    }
+
+    .add-testimonial button {
+        width: 100%;
+    }
+
+    .testimonial h3 {
+        font-size: 1.3rem;
+    }
+
+    .testimonial p {
+        font-size: 0.9rem;
+    }
+}

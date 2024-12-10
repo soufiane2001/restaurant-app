@@ -26,9 +26,11 @@
     <header>
         <h1>Bienvenue au Restaurant DelishHub</h1>
         <nav>
-            <a href="menu.php">Voir le Menu</a>
             <a href="login.php">Connexion</a>
             <a href="register.php">Inscription</a>
+            <a href="methode_paiement.php">payment</a>
+            <a href="avis.php">Avis</a>
+            <a href="localisation.php">Localistion</a>
             <a href="contact.php">Contactez-nous</a>
         </nav>
     </header>
@@ -39,6 +41,10 @@
     <footer>
         <p>&copy; 2024 Restaurant App. Tous droits réservés</p>
     </footer>
-    <script src="assets/js/script.js"></script>
+<script>
+    function scrollToMenu() {
+    window.location.href = "menu.php";
+}
+</script>
 </body>
 </html>

@@ -6,7 +6,7 @@
     <title>Historique des Commandes</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <style>
-         .order-history {
+        .order-history {
             max-width: 800px;
             margin: 30px auto;
             padding: 15px;
@@ -34,6 +34,20 @@
             line-height: 1.5;
             font-size: 1em;
         }
+
+        .confirm-btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .confirm-btn:hover {
+            background-color: #218838;
+        }
     </style>
 </head>
 <body>
@@ -42,7 +56,7 @@
         <nav>
             <a href="index.php">Accueil</a>
             <a href="cart.php">Panier</a>
-            <a href="order_history.php">vos commandes</a>
+            <a href="order_history.php">Vos Commandes</a>
             <form method="POST" action="logout.php" style="display: inline;">
                 <button type="submit" class="btn-logout">Déconnexion</button>
             </form>
@@ -52,7 +66,20 @@
         <?php
         session_start();
         $userId = $_SESSION['user_id'];
-        $conn = new mysqli('localhost', 'root', '', 'restaurant_app',port:3308);
+        $conn = new mysqli('localhost', 'root', '', 'restaurant_app', 3308);
+
+        if ($conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
+        }
+
+        // Handle confirmation of delivery
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_order_id'])) {
+            $orderId = intval($_POST['confirm_order_id']);
+            $updateQuery = "UPDATE orders SET status = 'confirmed' WHERE id = $orderId AND user_id = $userId";
+            $conn->query($updateQuery);
+        }
+
+        // Fetch user orders
         $query = "SELECT * FROM orders WHERE user_id = $userId ORDER BY created_at DESC";
         $result = $conn->query($query);
 
@@ -62,8 +89,17 @@
                         <p>Commande #{$order['id']}</p>
                         <p>État : {$order['status']}</p>
                         <p>Total : {$order['total_price']} DH</p>
-                        <p>Date : {$order['created_at']}</p>
-                      </div>";
+                        <p>Date : {$order['created_at']}</p>";
+                
+                // Show confirmation button if order is delivered
+                if ($order['status'] === 'Livrée') {
+                    echo "<form method='POST' action='order_history.php'>
+                            <input type='hidden' name='confirm_order_id' value='{$order['id']}'>
+                            <button type='submit' class='confirm-btn'>Confirmer la réception</button>
+                          </form>";
+                }
+
+                echo "</div>";
             }
         } else {
             echo "<p>Aucune commande trouvée.</p>";

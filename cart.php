@@ -1,6 +1,7 @@
 <?php
 session_start();
 
+$userId = $_SESSION['user_id'];
 // Redirect to login page if user is not logged in
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
@@ -11,69 +12,110 @@ if (!isset($_SESSION['user_id'])) {
 $port = 3308; // Adjust the port as per your MySQL configuration
 $conn = new mysqli('localhost', 'root', '', 'restaurant_app', $port);
 
-// Handle errors with the connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Fetch the user's cart items
-$userId = $_SESSION['user_id'];
+// Include FPDF library
+require('./fpdf/fpdf.php');
+
+// Handle finishing the order
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['finish_order'])) {
+    $userId = $_SESSION['user_id'];
+
+    // Fetch the user's cart items
+    $query = "SELECT cart.*, menu_items.name, menu_items.price 
+              FROM cart 
+              JOIN menu_items ON cart.item_id = menu_items.id 
+              WHERE cart.user_id = $userId";
+    $result = $conn->query($query);
+
+    // Calculate the total price
+    $totalPrice = 0;
+    $items = [];
+    while ($row = $result->fetch_assoc()) {
+        $itemTotal = $row['price'] * $row['quantity'];
+        $totalPrice += $itemTotal;
+        $items[] = $row;
+    }
+
+    // Insert into orders table
+    $query = "INSERT INTO orders (user_id, total_price, status) VALUES ($userId, $totalPrice, 'pending')";
+   
+    if ($conn->query($query)) {
+        $orderId = $conn->insert_id;
+
+        // Insert into order_items table
+        foreach ($items as $item) {
+            $itemId = $item['item_id'];
+            $quantity = $item['quantity'];
+            $query = "INSERT INTO order_items (order_id, menu_item_id, quantity) VALUES ($orderId, $itemId, $quantity)";
+            $conn->query($query);
+        }
+
+        // Clear the cart
+        $query = "DELETE FROM cart WHERE user_id = $userId";
+        $conn->query($query);
+
+        // Generate PDF invoice
+        $pdf = new FPDF();
+        $pdf->AddPage();
+        $pdf->SetFont('Arial', 'B', 16);
+
+        // Title
+        $pdf->Cell(0, 10, 'Facture', 0, 1, 'C');
+        $pdf->Ln(10);
+
+        // Order details
+        $pdf->SetFont('Arial', '', 12);
+        $pdf->Cell(0, 10, "Commande #: $orderId", 0, 1);
+        $pdf->Cell(0, 10, "Utilisateur: " . $_SESSION['user_name'], 0, 1);
+        $pdf->Cell(0, 10, "Date: " . date('d-m-Y H:i:s'), 0, 1);
+        $pdf->Ln(10);
+
+        // Items table
+        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->Cell(80, 10, 'Article', 1);
+        $pdf->Cell(30, 10, 'Prix', 1);
+        $pdf->Cell(30, 10, 'Quantite', 1);
+        $pdf->Cell(40, 10, 'Total', 1);
+        $pdf->Ln();
+
+        $pdf->SetFont('Arial', '', 12);
+        foreach ($items as $item) {
+            $itemTotal = $item['price'] * $item['quantity'];
+            $pdf->Cell(80, 10, $item['name'], 1);
+            $pdf->Cell(30, 10, number_format($item['price'], 2) . ' DH', 1);
+            $pdf->Cell(30, 10, $item['quantity'], 1);
+            $pdf->Cell(40, 10, number_format($itemTotal, 2) . ' DH', 1);
+            $pdf->Ln();
+        }
+
+        // Total price
+        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->Cell(140, 10, 'Total', 1);
+        $pdf->Cell(40, 10, number_format($totalPrice, 2) . ' DH', 1);
+
+        // Output the PDF to the browser
+        $fileName = "Facture_Commande_$orderId.pdf";
+        $pdf->Output('D', $fileName); // Force download  
+         header("Location: order_confirmation.php?order_id=$orderId");
+        exit;
+     
+    } else {
+        echo "Erreur lors de la commande : " . $conn->error;
+    }
+}
+
+// Fetch the user's cart items for display
 $query = "SELECT cart.*, menu_items.name, menu_items.price 
           FROM cart 
           JOIN menu_items ON cart.item_id = menu_items.id 
           WHERE cart.user_id = $userId";
-$result = $conn->query($query);
+$result = $conn->query($query); 
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_item_id'])) {
-    $itemId = intval($_POST['delete_item_id']);
-    $query = "DELETE FROM cart WHERE user_id = $userId AND item_id = $itemId";
-    if ($conn->query($query)) {
-        header("Location: cart.php"); // Refresh the cart page
-        exit;
-    } else {
-        echo "Erreur lors de la suppression de l'article : " . $conn->error;
-    }
-}
-// Handle finishing the order
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['finish_order'])) {
-    // Calculate the total price
-    $query = "SELECT SUM(menu_items.price * cart.quantity) AS total 
-              FROM cart 
-              JOIN menu_items ON cart.item_id = menu_items.id 
-              WHERE cart.user_id = $userId";
-    $resultTotal = $conn->query($query);
-    $rowTotal = $resultTotal->fetch_assoc();
-    $totalPrice = $rowTotal['total'];
-
-    // Insert into the orders table
-    $query = "INSERT INTO orders (user_id, total_price, status) VALUES ($userId, $totalPrice, 'pending')";
-    if ($conn->query($query)) {
-        // Get the last inserted order ID
-        $orderId = $conn->insert_id;
-
-        // Insert the cart items into the order_items table
-        $query = "SELECT * FROM cart WHERE user_id = $userId";
-        $cartItems = $conn->query($query);
-        while ($cartItem = $cartItems->fetch_assoc()) {
-            $itemId = $cartItem['item_id'];
-            $quantity = $cartItem['quantity'];
-            $query = "INSERT INTO order_items (order_id, menu_item_id, quantity) 
-                      VALUES ($orderId, $itemId, $quantity)";
-            $conn->query($query);
-        }
-
-        // Clear the user's cart
-        $query = "DELETE FROM cart WHERE user_id = $userId";
-        $conn->query($query);
-
-        // Redirect to an order confirmation page
-        header("Location: order_confirmation.php?order_id=$orderId");
-        exit;
-    } else {
-        echo "Failed to place the order: " . $conn->error;
-    }
-}
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
